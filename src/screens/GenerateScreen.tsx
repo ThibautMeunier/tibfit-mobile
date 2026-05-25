@@ -6,8 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Keyboard,
   Animated,
   Easing,
@@ -671,7 +669,7 @@ export default function GenerateScreen({ navigation }: Props) {
   // ── Rendu ─────────────────────────────────────────────────────────────────────
 
   return (
-    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <View style={styles.root}>
 
       {/* ── Pipeline Header ── */}
       <View style={styles.header}>
@@ -706,9 +704,21 @@ export default function GenerateScreen({ navigation }: Props) {
         ) : (
           <View style={styles.stepPillPlaceholder} />
         )}
+
+        {progressStep !== null ? (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.closeBtn}
+            activeOpacity={0.75}
+          >
+            <Icon name="x" size={18} color={C.text} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.closeBtnPlaceholder} />
+        )}
       </View>
 
-      {/* ── Progress bar (4 segments) + close ── */}
+      {/* ── Progress bar (4 segments) ── */}
       {progressStep !== null && (
         <View style={styles.progressRow}>
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
@@ -722,80 +732,73 @@ export default function GenerateScreen({ navigation }: Props) {
               ]}
             />
           ))}
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.closeBtn}
-            activeOpacity={0.75}
-          >
-            <Icon name="x" size={16} color={C.text3} />
-          </TouchableOpacity>
         </View>
       )}
 
-      {/* ── ÉTAPE 1 — Objectif (View fixe, bouton collé en bas) ── */}
-      {step === 1 && (
-        <View style={styles.step1Wrapper}>
-          <FibiBubble>
-            <Text style={styles.bubbleText}>{t('generate.description')}</Text>
-          </FibiBubble>
+      {/* ── Contenu par étape ── */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        automaticallyAdjustKeyboardInsets
+      >
 
-          <View style={styles.gap16} />
+        {/* ═══ ÉTAPE 1 — OBJECTIF ═══ */}
+        {step === 1 && (
+          <>
+            <FibiBubble>
+              <Text style={styles.bubbleText}>{t('generate.description')}</Text>
+            </FibiBubble>
 
-          <Textarea
-            value={input}
-            onChangeText={setInput}
-            placeholder={t('generate.textAreaPlaceholder')}
-            numberOfLines={6}
-          />
+            <View style={styles.gap16} />
 
-          <View style={styles.gap20} />
+            <Textarea
+              value={input}
+              onChangeText={setInput}
+              placeholder={t('generate.textAreaPlaceholder')}
+              numberOfLines={6}
+            />
 
-          <SectionLabel label={t('generate.examplesLabel')} />
-          <View style={styles.inspirationList}>
-            {inspirationCards.map((card, i) => (
+            <View style={styles.gap20} />
+
+            <SectionLabel label={t('generate.examplesLabel')} />
+            <View style={styles.inspirationList}>
+              {inspirationCards.map((card, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.inspirationCard}
+                  onPress={() => setInput(card.text)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.inspirationEmoji}>{card.emoji}</Text>
+                  <View style={styles.inspirationInfo}>
+                    <Text style={styles.inspirationTitle}>{card.title}</Text>
+                    <Text style={styles.inspirationSubtitle}>{card.subtitle}</Text>
+                  </View>
+                  <Icon name="plus" size={16} color={C.text3} />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {!user?.objectif && (
               <TouchableOpacity
-                key={i}
-                style={styles.inspirationCard}
-                onPress={() => setInput(card.text)}
+                style={styles.profileBanner}
+                onPress={() => navigation.navigate('Main', { screen: 'Profile' })}
                 activeOpacity={0.8}
               >
-                <Text style={styles.inspirationEmoji}>{card.emoji}</Text>
-                <View style={styles.inspirationInfo}>
-                  <Text style={styles.inspirationTitle}>{card.title}</Text>
-                  <Text style={styles.inspirationSubtitle}>{card.subtitle}</Text>
+                <View style={styles.profileBannerBadge}>
+                  <Text style={styles.profileBannerBadgeLabel}>!</Text>
                 </View>
-                <Icon name="plus" size={16} color={C.text3} />
+                <Text style={styles.profileBannerText}>
+                  <Text style={styles.profileBannerBold}>{t('generate.incompleteProfile').split('.')[0]}.</Text>
+                  {' '}{t('generate.incompleteProfile').split('.').slice(1).join('.').trim()}
+                </Text>
+                <Icon name="chevronRight" size={14} color={C.orange} />
               </TouchableOpacity>
-            ))}
-          </View>
-
-          {!user?.objectif && (
-            <TouchableOpacity
-              style={styles.profileBanner}
-              onPress={() => navigation.navigate('Main', { screen: 'Profile' })}
-              activeOpacity={0.8}
-            >
-              <View style={styles.profileBannerBadge}>
-                <Text style={styles.profileBannerBadgeLabel}>!</Text>
-              </View>
-              <Text style={styles.profileBannerText}>
-                <Text style={styles.profileBannerBold}>{t('generate.incompleteProfile').split('.')[0]}.</Text>
-                {' '}{t('generate.incompleteProfile').split('.').slice(1).join('.').trim()}
-              </Text>
-              <Icon name="chevronRight" size={14} color={C.orange} />
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-
-      {/* ── Contenu par étape (steps 2-6) ── */}
-      {step !== 1 && (
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-        >
+            )}
+          </>
+        )}
 
         {/* ═══ ÉTAPE 2 — MÉTRIQUES ═══ */}
         {step === 2 && (
@@ -1136,8 +1139,7 @@ export default function GenerateScreen({ navigation }: Props) {
 
         {/* Espace pour la bottom bar */}
         <View style={styles.bottomSpacer} />
-        </ScrollView>
-      )}
+      </ScrollView>
 
       {/* ── Bottom bar ── */}
 
@@ -1221,7 +1223,7 @@ export default function GenerateScreen({ navigation }: Props) {
           </TouchableOpacity>
         </View>
       )}
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -1247,6 +1249,13 @@ const styles = StyleSheet.create({
   },
   backBtnDisabled: { opacity: 0.4 },
   backBtnPlaceholder: { width: 36, height: 36, flexShrink: 0 },
+  closeBtn: {
+    width: 36, height: 36, borderRadius: 12,
+    backgroundColor: C.card, borderWidth: 1, borderColor: C.border,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  closeBtnPlaceholder: { width: 36, height: 36, flexShrink: 0 },
   headerAvatar: { width: 28, height: 28, flexShrink: 0 },
   headerTitle: { flex: 1, fontSize: 17, fontWeight: '700', color: C.text },
   stepPill: {
@@ -1271,18 +1280,10 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   progressSeg: { flex: 1, height: 3, borderRadius: 2 },
-  closeBtn: {
-    width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-    alignItems: 'center', justifyContent: 'center',
-    marginLeft: 4,
-  },
   progressSegActive: { backgroundColor: C.blue },
   progressSegInactive: { backgroundColor: C.bg3 },
 
-  // Step 1 — layout fixe (pas de scroll)
-  step1Wrapper: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
-
-  // Steps 2-6 — scroll
+  // Steps 1-6 — scroll
   scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 24 },
 
