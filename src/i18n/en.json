@@ -165,6 +165,8 @@
     "feedbackPerfect": "Perfect",
     "feedbackAdjust": "Adjust",
     "seancesFirstWeek": "First week",
+    "allSeances": "All sessions",
+    "generatingSeances": "Sessions being created",
     "statSessions": "Sessions",
     "statVolume": "Volume",
     "statWeeks": "Weeks",

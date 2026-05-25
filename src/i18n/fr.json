@@ -165,6 +165,8 @@
     "feedbackPerfect": "Parfait",
     "feedbackAdjust": "À ajuster",
     "seancesFirstWeek": "Première semaine",
+    "allSeances": "Toutes les séances",
+    "generatingSeances": "Séances en cours de création",
     "statSessions": "Séances",
     "statVolume": "Volume",
     "statWeeks": "Semaines",

@@ -436,6 +436,10 @@ export default function GenerateScreen({ navigation }: Props) {
   const [ratingSent, setRatingSent] = useState(false);
   const [ratingSending, setRatingSending] = useState(false);
 
+  // Streaming étape 5
+  const streamBufferRef = useRef('');
+  const [streamingSeances, setStreamingSeances] = useState<SeancePreview[]>([]);
+
   // Animations étape 5
   const bobAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -629,11 +633,16 @@ export default function GenerateScreen({ navigation }: Props) {
   ) {
     setStep(5);
     setGenerateError(null);
+    streamBufferRef.current = '';
+    setStreamingSeances([]);
     generation.startGeneration();
 
     await generatePlan(
       input.trim(),
-      () => {}, // pas de streaming séances dans le nouvel écran
+      (chunk: string) => {
+        streamBufferRef.current += chunk;
+        setStreamingSeances(parseCompletedSeances(streamBufferRef.current));
+      },
       (planId) => {
         generation.completeGeneration(planId);
         if (!isMounted.current) return;
@@ -690,13 +699,7 @@ export default function GenerateScreen({ navigation }: Props) {
   const totalVolume = Math.round(
     generation.seances.reduce((sum, s) => sum + s.duree_minutes, 0) / 60,
   );
-  const firstWeekSeances = (() => {
-    if (!generation.seances.length) return [];
-    const sorted = [...generation.seances].sort((a, b) => a.date.localeCompare(b.date));
-    const firstDate = new Date(sorted[0].date);
-    const cutoff = new Date(firstDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return sorted.filter(s => new Date(s.date) < cutoff);
-  })();
+  const allSeancesSorted = [...generation.seances].sort((a, b) => a.date.localeCompare(b.date));
 
   const inspirationCards = t('generate.inspirationCards', { returnObjects: true }) as Array<{
     emoji: string; title: string; subtitle: string; text: string;
@@ -1079,6 +1082,24 @@ export default function GenerateScreen({ navigation }: Props) {
                 {getTipAt(i18n.language, user?.niveau, tipIndex)}
               </Text>
             </FibiBubble>
+
+            {/* Séances en cours de création */}
+            {streamingSeances.length > 0 && (
+              <View style={[styles.gap20, styles.streamSeancesBlock]}>
+                <SectionLabel label={t('generate.generatingSeances')} />
+                <View style={styles.seancesList}>
+                  {streamingSeances.map((s, i) => (
+                    <View key={i} style={styles.streamSeanceRow}>
+                      <Text style={styles.streamSeanceEmoji}>{s.emoji ?? '🏃'}</Text>
+                      <View style={styles.seanceInfo}>
+                        <Text style={styles.seanceTitle} numberOfLines={1}>{s.titre}</Text>
+                        <Text style={styles.seanceMeta}>{formatDate(s.date)} · {s.duree_minutes} min</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
           </View>
         )}
 
@@ -1130,12 +1151,12 @@ export default function GenerateScreen({ navigation }: Props) {
                   </View>
                 )}
 
-                {/* Première semaine */}
-                {firstWeekSeances.length > 0 && (
+                {/* Toutes les séances */}
+                {allSeancesSorted.length > 0 && (
                   <View style={styles.gap16}>
-                    <SectionLabel label={t('generate.seancesFirstWeek')} />
+                    <SectionLabel label={t('generate.allSeances')} />
                     <View style={styles.seancesList}>
-                      {firstWeekSeances.map((s) => {
+                      {allSeancesSorted.map((s) => {
                         const accent = sessionColor(s.couleur);
                         return (
                           <View key={s.id} style={styles.seanceRow}>
@@ -1533,6 +1554,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row', gap: 8,
     marginBottom: 16,
   },
+
+  // Étape 5 — séances en streaming
+  streamSeancesBlock: { alignSelf: 'stretch' },
+  streamSeanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: C.card,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  streamSeanceEmoji: { fontSize: 20, width: 28, textAlign: 'center', flexShrink: 0 },
 
   // Séances
   seancesList: { gap: 8 },
