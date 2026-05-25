@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { C } from '../constants/colors';
-import DaysWeeksSelector, { JOURS_FR, Jour, WEEKS_OPTIONS_LONG } from './DaysWeeksSelector';
+import DaysWeeksSelector, { JOURS_FR, Jour, WEEKS_OPTIONS_SHORT } from './DaysWeeksSelector';
 
 interface Props {
   visible: boolean;
@@ -42,7 +42,7 @@ export default function DaysSheet({ visible, selectedJours, onToggleJour, select
             onToggleJour={onToggleJour}
             selectedWeeks={selectedWeeks}
             onSelectWeeks={onSelectWeeks}
-            weekOptions={WEEKS_OPTIONS_LONG}
+            weekOptions={WEEKS_OPTIONS_SHORT}
             loading={loading}
             hint={loading ? undefined : t('daysPopup.selectedHint', { count: selectedJours.size })}
             weeksLabel={t('daysPopup.weeksLabel')}
