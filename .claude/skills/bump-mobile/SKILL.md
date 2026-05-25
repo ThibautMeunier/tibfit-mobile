@@ -18,9 +18,10 @@ Quand l'utilisateur tape `/bump-mobile`.
 | minor | 2.0.x → 2.1.0    | reset à **1**     | bump = nouvelle version |
 | major | 2.x.x → 3.0.0    | reset à **1**     | bump = nouvelle version |
 
-Le `buildNumber` est présent à **deux endroits** qui doivent toujours être synchronisés :
+Le `buildNumber` est présent à **trois endroits** qui doivent toujours être synchronisés :
 - `app.json` → `expo.ios.buildNumber`
 - `ios/TibFit/Info.plist` → `CFBundleVersion`
+- `ios/TibFitWidget/Info.plist` → `CFBundleVersion`
 
 La `runtimeVersion` est présente à **trois endroits** qui doivent toujours être synchronisés :
 - `app.json` → `expo.runtimeVersion`
@@ -31,15 +32,17 @@ La `runtimeVersion` est présente à **trois endroits** qui doivent toujours êt
 ### 1. Lire l'état actuel
 
 Lis `app.json` (champs `expo.version`, `expo.ios.buildNumber`, `expo.runtimeVersion`),
-`ios/TibFit/Info.plist` (`CFBundleShortVersionString`, `CFBundleVersion`)
+`ios/TibFit/Info.plist` (`CFBundleShortVersionString`, `CFBundleVersion`),
+`ios/TibFitWidget/Info.plist` (`CFBundleShortVersionString`, `CFBundleVersion`)
 et `ios/TibFit/Supporting/Expo.plist` (`EXUpdatesRuntimeVersion`).
 
 Affiche :
 ```
 État actuel :
-  app.json    version=X.Y.Z  buildNumber=N  runtimeVersion=A.B.C
-  Info.plist  version=X.Y.Z  buildNumber=N
-  Expo.plist  runtimeVersion=A.B.C
+  app.json       version=X.Y.Z  buildNumber=N  runtimeVersion=A.B.C
+  Info.plist     version=X.Y.Z  buildNumber=N
+  Widget.plist   version=X.Y.Z  buildNumber=N
+  Expo.plist     runtimeVersion=A.B.C
 ```
 
 Si les fichiers sont désynchronisés, affiche un warning et utilise **app.json comme source de vérité** pour calculer le bump.
@@ -81,13 +84,17 @@ Appliquer ?
 - `CFBundleShortVersionString` → nouvelle version
 - `CFBundleVersion` → nouveau buildNumber (string)
 
+**`ios/TibFitWidget/Info.plist`** :
+- `CFBundleShortVersionString` → nouvelle version (doit être identique à l'app principale, sinon Apple rejette avec ITMS-90473)
+- `CFBundleVersion` → nouveau buildNumber (string)
+
 **`ios/TibFit/Supporting/Expo.plist`** :
 - `EXUpdatesRuntimeVersion` → nouvelle runtimeVersion (toujours, même pour patch — garder en sync avec app.json)
 
 ### 5. Committer dans le repo mobile
 
 ```bash
-git add app.json ios/TibFit/Info.plist ios/TibFit/Supporting/Expo.plist
+git add app.json ios/TibFit/Info.plist ios/TibFitWidget/Info.plist ios/TibFit/Supporting/Expo.plist
 git commit -m "chore(mobile): bump version X'.Y'.Z' build N'"
 ```
 
