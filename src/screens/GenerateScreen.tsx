@@ -674,7 +674,7 @@ export default function GenerateScreen({ navigation }: Props) {
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
       {/* ── Pipeline Header ── */}
-      <View style={[styles.header, { paddingTop: insets.top + 4 }]}>
+      <View style={styles.header}>
         {step > 1 ? (
           <TouchableOpacity
             onPress={handleBack}
@@ -732,70 +732,70 @@ export default function GenerateScreen({ navigation }: Props) {
         </View>
       )}
 
-      {/* ── Contenu par étape ── */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        scrollEnabled={step !== 1}
-      >
+      {/* ── ÉTAPE 1 — Objectif (View fixe, bouton collé en bas) ── */}
+      {step === 1 && (
+        <View style={styles.step1Wrapper}>
+          <FibiBubble>
+            <Text style={styles.bubbleText}>{t('generate.description')}</Text>
+          </FibiBubble>
 
-        {/* ═══ ÉTAPE 1 — OBJECTIF ═══ */}
-        {step === 1 && (
-          <>
-            <FibiBubble>
-              <Text style={styles.bubbleText}>{t('generate.description')}</Text>
-            </FibiBubble>
+          <View style={styles.gap16} />
 
-            <View style={styles.gap16} />
+          <Textarea
+            value={input}
+            onChangeText={setInput}
+            placeholder={t('generate.textAreaPlaceholder')}
+            numberOfLines={6}
+          />
 
-            <Textarea
-              value={input}
-              onChangeText={setInput}
-              placeholder={t('generate.textAreaPlaceholder')}
-              numberOfLines={6}
-            />
+          <View style={styles.gap20} />
 
-            <View style={styles.gap20} />
-
-            <SectionLabel label={t('generate.examplesLabel')} />
-            <View style={styles.inspirationList}>
-              {inspirationCards.map((card, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={styles.inspirationCard}
-                  onPress={() => setInput(card.text)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.inspirationEmoji}>{card.emoji}</Text>
-                  <View style={styles.inspirationInfo}>
-                    <Text style={styles.inspirationTitle}>{card.title}</Text>
-                    <Text style={styles.inspirationSubtitle}>{card.subtitle}</Text>
-                  </View>
-                  <Icon name="plus" size={16} color={C.text3} />
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {!user?.objectif && (
+          <SectionLabel label={t('generate.examplesLabel')} />
+          <View style={styles.inspirationList}>
+            {inspirationCards.map((card, i) => (
               <TouchableOpacity
-                style={styles.profileBanner}
-                onPress={() => navigation.goBack()}
+                key={i}
+                style={styles.inspirationCard}
+                onPress={() => setInput(card.text)}
                 activeOpacity={0.8}
               >
-                <View style={styles.profileBannerBadge}>
-                  <Text style={styles.profileBannerBadgeLabel}>!</Text>
+                <Text style={styles.inspirationEmoji}>{card.emoji}</Text>
+                <View style={styles.inspirationInfo}>
+                  <Text style={styles.inspirationTitle}>{card.title}</Text>
+                  <Text style={styles.inspirationSubtitle}>{card.subtitle}</Text>
                 </View>
-                <Text style={styles.profileBannerText}>
-                  <Text style={styles.profileBannerBold}>{t('generate.incompleteProfile').split('.')[0]}.</Text>
-                  {' '}{t('generate.incompleteProfile').split('.').slice(1).join('.').trim()}
-                </Text>
-                <Icon name="chevronRight" size={14} color={C.orange} />
+                <Icon name="plus" size={16} color={C.text3} />
               </TouchableOpacity>
-            )}
-          </>
-        )}
+            ))}
+          </View>
+
+          {!user?.objectif && (
+            <TouchableOpacity
+              style={styles.profileBanner}
+              onPress={() => navigation.navigate('Main', { screen: 'Profile' })}
+              activeOpacity={0.8}
+            >
+              <View style={styles.profileBannerBadge}>
+                <Text style={styles.profileBannerBadgeLabel}>!</Text>
+              </View>
+              <Text style={styles.profileBannerText}>
+                <Text style={styles.profileBannerBold}>{t('generate.incompleteProfile').split('.')[0]}.</Text>
+                {' '}{t('generate.incompleteProfile').split('.').slice(1).join('.').trim()}
+              </Text>
+              <Icon name="chevronRight" size={14} color={C.orange} />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {/* ── Contenu par étape (steps 2-6) ── */}
+      {step !== 1 && (
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
 
         {/* ═══ ÉTAPE 2 — MÉTRIQUES ═══ */}
         {step === 2 && (
@@ -1136,7 +1136,8 @@ export default function GenerateScreen({ navigation }: Props) {
 
         {/* Espace pour la bottom bar */}
         <View style={styles.bottomSpacer} />
-      </ScrollView>
+        </ScrollView>
+      )}
 
       {/* ── Bottom bar ── */}
 
@@ -1235,7 +1236,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingTop: 16,
+    paddingBottom: 10,
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 12,
@@ -1277,7 +1279,10 @@ const styles = StyleSheet.create({
   progressSegActive: { backgroundColor: C.blue },
   progressSegInactive: { backgroundColor: C.bg3 },
 
-  // Scroll
+  // Step 1 — layout fixe (pas de scroll)
+  step1Wrapper: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
+
+  // Steps 2-6 — scroll
   scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 24 },
 
