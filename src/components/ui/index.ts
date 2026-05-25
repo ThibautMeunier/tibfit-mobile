@@ -13,3 +13,5 @@ export { default as StatTile } from './StatTile';
 export { default as NavHeader } from './NavHeader';
 export { default as LargeHeader } from './LargeHeader';
 export { default as Sheet } from './Sheet';
+export { default as FibiBubble } from './FibiBubble';
+export type { FibiBubbleTone } from './FibiBubble';
