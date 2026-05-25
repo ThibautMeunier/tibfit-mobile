@@ -593,11 +593,18 @@ export default function GenerateScreen({ navigation }: Props) {
     setStep(4);
     try {
       const result = await selectDaysForPlan(input.trim());
+      console.log('[goToStep4] raw result:', JSON.stringify(result));
       const normalized = result.jours.map(j => j.toLowerCase().trim());
+      console.log('[goToStep4] normalized:', normalized);
+      console.log('[goToStep4] JOURS_FR:', JOURS_FR);
       const validJours = normalized.filter((j): j is Jour => JOURS_FR.includes(j as Jour));
-      setSelectedJours(new Set(validJours.length ? validJours : (['mardi', 'jeudi', 'samedi'] as Jour[])));
+      console.log('[goToStep4] validJours:', validJours, '| semaines:', result.semaines);
+      const finalJours = validJours.length ? validJours : (['mardi', 'jeudi', 'samedi'] as Jour[]);
+      console.log('[goToStep4] finalJours (applied):', finalJours);
+      setSelectedJours(new Set(finalJours));
       setDurationWeeks(result.semaines ?? 4);
-    } catch {
+    } catch (err) {
+      console.warn('[goToStep4] error:', err);
       setSelectedJours(new Set<Jour>(['mardi', 'jeudi', 'samedi']));
       setDurationWeeks(4);
     } finally {
