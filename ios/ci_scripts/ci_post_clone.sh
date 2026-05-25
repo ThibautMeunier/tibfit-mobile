@@ -8,9 +8,9 @@ brew install node
 {
   echo "export NODE_BINARY=$(which node)"
   echo "export CI=true"
-} > "$CI_PRIMARY_REPOSITORY_PATH/mobile/ios/.xcode.env.local"
+} > "$CI_PRIMARY_REPOSITORY_PATH/ios/.xcode.env.local"
 
-cd "$CI_PRIMARY_REPOSITORY_PATH/mobile"
+cd "$CI_PRIMARY_REPOSITORY_PATH"
 npm ci
 
 cd ios
