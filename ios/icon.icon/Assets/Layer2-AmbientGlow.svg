@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="amb" cx="512" cy="480" r="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4A9EFF" stop-opacity="0.18"></stop>
+      <stop offset="100%" stop-color="#4A9EFF" stop-opacity="0"></stop>
+    </radialGradient>
+    <filter id="bgglow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="40"></feGaussianBlur>
+    </filter>
+  </defs>
+  
+  <rect width="1024" height="1024" fill="url(#amb)"></rect>
+  
+  <ellipse cx="512" cy="490" rx="260" ry="280" fill="#3A7FE8" opacity="0.09" filter="url(#bgglow)"></ellipse>
+</svg>

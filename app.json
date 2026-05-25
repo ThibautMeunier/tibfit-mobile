@@ -1,0 +1,79 @@
+{
+  "expo": {
+    "name": "TibFit",
+    "slug": "tibfit",
+    "scheme": "tibfit",
+    "version": "2.2.10",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0F"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tibfit.app",
+      "buildNumber": "11",
+      "entitlements": {
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.applesignin": [
+          "Default"
+        ],
+        "aps-environment": "production"
+      },
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "TibFit lit vos données d'activité (fréquence cardiaque, VO2 max) pour affiner votre score de fatigue et personnaliser vos séances.",
+        "NSHealthUpdateUsageDescription": "TibFit enregistre vos séances complétées dans Apple Santé pour centraliser votre suivi d'entraînement.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        },
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "TibFit n'utilise pas la caméra.",
+        "NSPhotoLibraryUsageDescription": "TibFit n'accède pas à vos photos."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A0A0F"
+      },
+      "package": "com.tibfit.app"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/0fd4a3dc-fa3b-40db-ac8e-0e8f83dfeca9",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    },
+    "runtimeVersion": "2.2.0",
+    "plugins": [
+      "expo-font",
+      "expo-asset",
+      "expo-build-properties",
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#3B82F6",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0fd4a3dc-fa3b-40db-ac8e-0e8f83dfeca9"
+      }
+    }
+  }
+}

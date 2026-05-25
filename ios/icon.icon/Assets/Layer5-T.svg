@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="Tgrad" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#7DC4FF"></stop>
+      <stop offset="100%" stop-color="#3A82E8"></stop>
+    </linearGradient>
+    <filter id="Tglow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18" result="blur"></feGaussianBlur>
+      <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+    </filter>
+  </defs>
+  
+  <rect x="195" y="248" width="634" height="122" rx="61" fill="url(#Tgrad)" filter="url(#Tglow)"></rect>
+  
+  <rect x="451" y="358" width="122" height="338" rx="61" fill="url(#Tgrad)" filter="url(#Tglow)"></rect>
+</svg>
