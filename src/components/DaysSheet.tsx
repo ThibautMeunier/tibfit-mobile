@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Modal,
   ScrollView,
@@ -11,47 +11,24 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { C } from '../constants/colors';
-import DaysWeeksSelector, { JOURS_FR, Jour } from './DaysWeeksSelector';
+import DaysWeeksSelector, { JOURS_FR, Jour, WEEKS_OPTIONS_LONG } from './DaysWeeksSelector';
 
 interface Props {
   visible: boolean;
-  suggested: string[];
+  selectedJours: Set<Jour>;
+  onToggleJour: (jour: Jour) => void;
+  selectedWeeks: number;
+  onSelectWeeks: (w: number) => void;
   loading: boolean;
-  suggestedWeeks?: number | null;
   onConfirm: (jours: string[], semaines: number) => void;
   onSkip: () => void;
 }
 
-export default function DaysSheet({ visible, suggested, loading, suggestedWeeks, onConfirm, onSkip }: Props) {
+export default function DaysSheet({ visible, selectedJours, onToggleJour, selectedWeeks, onSelectWeeks, loading, onConfirm, onSkip }: Props) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const [selected, setSelected] = useState<Set<Jour>>(new Set());
-  const [selectedWeeks, setSelectedWeeks] = useState<number>(suggestedWeeks ?? 4);
 
-  useEffect(() => {
-    if (suggested.length > 0) {
-      setSelected(new Set(suggested.filter((j): j is Jour => JOURS_FR.includes(j as Jour))));
-    }
-  }, [suggested]);
-
-  useEffect(() => {
-    if (suggestedWeeks != null) setSelectedWeeks(suggestedWeeks);
-  }, [suggestedWeeks]);
-
-  function toggle(jour: Jour) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(jour)) {
-        if (next.size === 1) return prev;
-        next.delete(jour);
-      } else {
-        next.add(jour);
-      }
-      return next;
-    });
-  }
-
-  const sortedSelected = JOURS_FR.filter((j) => selected.has(j));
+  const sortedSelected = JOURS_FR.filter((j) => selectedJours.has(j));
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" transparent={false}>
@@ -61,12 +38,13 @@ export default function DaysSheet({ visible, suggested, loading, suggestedWeeks,
           <Text style={styles.subtitle}>{t('daysPopup.subtitle')}</Text>
 
           <DaysWeeksSelector
-            selectedJours={selected}
-            onToggleJour={toggle}
+            selectedJours={selectedJours}
+            onToggleJour={onToggleJour}
             selectedWeeks={selectedWeeks}
-            onSelectWeeks={setSelectedWeeks}
+            onSelectWeeks={onSelectWeeks}
+            weekOptions={WEEKS_OPTIONS_LONG}
             loading={loading}
-            hint={loading ? undefined : t('daysPopup.selectedHint', { count: selected.size })}
+            hint={loading ? undefined : t('daysPopup.selectedHint', { count: selectedJours.size })}
             weeksLabel={t('daysPopup.weeksLabel')}
             weekLabel={(count) => t('daysPopup.week', { count })}
           />
@@ -77,9 +55,9 @@ export default function DaysSheet({ visible, suggested, loading, suggestedWeeks,
             <Text style={styles.skipLabel}>{t('daysPopup.skip')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.confirmBtn, (loading || selected.size === 0) && { opacity: 0.5 }]}
+            style={[styles.confirmBtn, (loading || selectedJours.size === 0) && { opacity: 0.5 }]}
             onPress={() => onConfirm(sortedSelected, selectedWeeks)}
-            disabled={loading || selected.size === 0}
+            disabled={loading || selectedJours.size === 0}
             activeOpacity={0.85}
           >
             <LinearGradient

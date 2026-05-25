@@ -20,6 +20,7 @@ import { RootStackParamList } from '../types';
 import { CatalogMetric, generatePlan, selectDaysForPlan, selectMetricsForPlan, upsertUserMetric, upsertPlanReview } from '../services/api';
 import Icon from '../components/Icon';
 import DaysSheet from '../components/DaysSheet';
+import { JOURS_FR, Jour } from '../components/DaysWeeksSelector';
 import MetricsSheet from '../components/MetricsSheet';
 import WarmupModeSheet from '../components/WarmupModeSheet';
 import LottieView from 'lottie-react-native';
@@ -102,8 +103,8 @@ export default function GenerateScreen({ navigation }: Props) {
   const [missingMetrics, setMissingMetrics] = useState<string[]>([]);
   const [daysVisible, setDaysVisible] = useState(false);
   const [daysLoading, setDaysLoading] = useState(false);
-  const [suggestedDays, setSuggestedDays] = useState<string[]>([]);
-  const [suggestedWeeks, setSuggestedWeeks] = useState<number | null>(null);
+  const [daysJours, setDaysJours] = useState<Set<Jour>>(new Set());
+  const [daysWeeks, setDaysWeeks] = useState<number>(4);
   const [selectedDays, setSelectedDays] = useState<string[] | null>(null);
   const [selectedWeeks, setSelectedWeeks] = useState<number>(4);
   const pendingMissingMetricsRef = React.useRef<string[]>([]);
@@ -198,16 +199,30 @@ export default function GenerateScreen({ navigation }: Props) {
     openDaysPopup();
   }
 
+  function handleDaysToggle(jour: Jour) {
+    setDaysJours(prev => {
+      const next = new Set(prev);
+      if (next.has(jour)) {
+        if (next.size === 1) return prev;
+        next.delete(jour);
+      } else {
+        next.add(jour);
+      }
+      return next;
+    });
+  }
+
   async function openDaysPopup() {
     setDaysLoading(true);
     setDaysVisible(true);
     try {
       const result = await selectDaysForPlan(input.trim());
-      setSuggestedDays(result.jours);
-      setSuggestedWeeks(result.semaines);
+      const validJours = result.jours.filter((j): j is Jour => JOURS_FR.includes(j as Jour));
+      setDaysJours(new Set(validJours));
+      setDaysWeeks(result.semaines ?? 4);
     } catch {
-      setSuggestedDays(['mardi', 'jeudi', 'samedi']);
-      setSuggestedWeeks(null);
+      setDaysJours(new Set<Jour>(['mardi', 'jeudi', 'samedi']));
+      setDaysWeeks(4);
     } finally {
       setDaysLoading(false);
     }
@@ -234,7 +249,7 @@ export default function GenerateScreen({ navigation }: Props) {
       setMissingMetrics(missing);
       setWarmupVisible(true);
     } else {
-      handleGenerate(null, [], null, selectedWeeks);
+      handleGenerate(null, [], null, daysWeeks);
     }
   }
 
@@ -609,9 +624,11 @@ export default function GenerateScreen({ navigation }: Props) {
 
       <DaysSheet
         visible={daysVisible}
-        suggested={suggestedDays}
+        selectedJours={daysJours}
+        onToggleJour={handleDaysToggle}
+        selectedWeeks={daysWeeks}
+        onSelectWeeks={setDaysWeeks}
         loading={daysLoading}
-        suggestedWeeks={suggestedWeeks}
         onConfirm={handleDaysConfirm}
         onSkip={handleDaysSkip}
       />
