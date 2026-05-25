@@ -37,7 +37,10 @@ type IconName =
   | 'trash'
   | 'heart'
   | 'watch'
-  | 'person';
+  | 'person'
+  | 'info'
+  | 'thumbUp'
+  | 'sprout';
 
 interface IconProps {
   name: IconName;
@@ -252,6 +255,29 @@ export default function Icon({ name, size = 20, color = 'currentColor' }: IconPr
       return (
         <Svg {...props}>
           <Path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" {...strokeProps} />
+        </Svg>
+      );
+    case 'info':
+      return (
+        <Svg {...props}>
+          <Circle cx="12" cy="12" r="10" {...strokeProps} />
+          <Line x1="12" y1="16" x2="12" y2="12" {...strokeProps} />
+          <Line x1="12" y1="8" x2="12.01" y2="8" {...strokeProps} />
+        </Svg>
+      );
+    case 'thumbUp':
+      return (
+        <Svg {...props}>
+          <Path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" {...strokeProps} />
+          <Path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" {...strokeProps} />
+        </Svg>
+      );
+    case 'sprout':
+      return (
+        <Svg {...props}>
+          <Path d="M12 22v-8" {...strokeProps} />
+          <Path d="M12 14c0-4-4-7-7-6 0 3 3 6 7 6z" {...strokeProps} />
+          <Path d="M12 14c0-4 4-7 7-6 0 3-3 6-7 6z" {...strokeProps} />
         </Svg>
       );
     default:

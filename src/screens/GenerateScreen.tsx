@@ -136,37 +136,73 @@ interface MetricRowProps {
 
 function MetricRow({ metric, value, onChange, expanded, onToggle }: MetricRowProps) {
   const isKey = metric.blocking_for_sports.length > 0;
+
+  const chipValues: string[] = (() => {
+    if (metric.type === 'enum' && metric.enum_values?.length) {
+      return metric.enum_values;
+    }
+    if (metric.type === 'scale' && metric.value_range) {
+      const count = metric.value_range.max - metric.value_range.min + 1;
+      if (count <= 10) {
+        return Array.from({ length: count }, (_, i) => String(metric.value_range!.min + i));
+      }
+    }
+    return [];
+  })();
+
+  const useChips = chipValues.length > 0;
+
   return (
     <View style={mStyles.container}>
-      <View style={mStyles.header}>
-        <View style={mStyles.nameRow}>
-          <Text style={mStyles.name}>{metric.name}</Text>
+      <View style={mStyles.inner}>
+        <View style={mStyles.topRow}>
+          <Text style={mStyles.name} numberOfLines={2}>{metric.name}</Text>
           {isKey && (
             <View style={mStyles.keyBadge}>
               <Text style={mStyles.keyLabel}>CLÉ</Text>
             </View>
           )}
+          <View style={mStyles.topRowSpacer} />
+          <TouchableOpacity
+            onPress={onToggle}
+            style={[mStyles.infoBtn, expanded && mStyles.infoBtnActive]}
+            activeOpacity={0.7}
+          >
+            <Icon name="info" size={14} color={expanded ? C.blue : C.text3} />
+          </TouchableOpacity>
         </View>
-        <View style={mStyles.inputWrapper}>
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            placeholder={metric.unit ?? '—'}
-            placeholderTextColor={C.text3}
-            keyboardType={metric.type === 'number' ? 'decimal-pad' : 'default'}
-            returnKeyType="done"
-            style={mStyles.input}
-          />
-          {metric.unit && <Text style={mStyles.unit}>{metric.unit}</Text>}
-        </View>
-        <TouchableOpacity
-          onPress={onToggle}
-          style={[mStyles.infoBtn, expanded && mStyles.infoBtnActive]}
-          activeOpacity={0.7}
-        >
-          <Icon name="info" size={14} color={expanded ? C.blue : C.text3} />
-        </TouchableOpacity>
+
+        {useChips ? (
+          <View style={mStyles.chipsRow}>
+            {chipValues.map(chip => (
+              <TouchableOpacity
+                key={chip}
+                style={[mStyles.chip, value === chip && mStyles.chipActive]}
+                onPress={() => onChange(value === chip ? '' : chip)}
+                activeOpacity={0.75}
+              >
+                <Text style={[mStyles.chipText, value === chip && mStyles.chipTextActive]}>
+                  {chip}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={mStyles.inputRow}>
+            <TextInput
+              value={value}
+              onChangeText={onChange}
+              placeholder={metric.unit ?? '—'}
+              placeholderTextColor={C.text3}
+              keyboardType={metric.type === 'number' ? 'decimal-pad' : 'default'}
+              returnKeyType="done"
+              style={mStyles.input}
+            />
+            {metric.unit && <Text style={mStyles.unit}>{metric.unit}</Text>}
+          </View>
+        )}
       </View>
+
       {expanded && metric.description ? (
         <View style={mStyles.descriptionBox}>
           <Text style={mStyles.description}>{metric.description}</Text>
@@ -184,28 +220,56 @@ const mStyles = StyleSheet.create({
     borderRadius: 14,
     overflow: 'hidden',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
+  inner: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 10,
     gap: 10,
   },
-  nameRow: {
-    flex: 1,
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    minWidth: 0,
   },
-  name: { fontSize: 14, fontWeight: '600', color: C.text },
+  topRowSpacer: { flex: 1 },
+  name: { fontSize: 14, fontWeight: '600', color: C.text, flexShrink: 1 },
   keyBadge: {
     backgroundColor: 'rgba(59,130,246,0.12)',
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
+    flexShrink: 0,
   },
   keyLabel: { fontSize: 9, fontWeight: '700', color: C.blue, letterSpacing: 0.6 },
-  inputWrapper: {
+  infoBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  infoBtnActive: { backgroundColor: 'rgba(59,130,246,0.12)' },
+  chipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    backgroundColor: C.bg3,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  chipActive: {
+    backgroundColor: 'rgba(59,130,246,0.12)',
+    borderColor: C.blue,
+  },
+  chipText: { fontSize: 13, color: C.text2, fontWeight: '500' },
+  chipTextActive: { color: C.blue, fontWeight: '700' },
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: C.bg3,
@@ -215,7 +279,6 @@ const mStyles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 4,
     paddingVertical: 4,
-    minWidth: 110,
   },
   input: {
     flex: 1,
@@ -226,14 +289,6 @@ const mStyles = StyleSheet.create({
     minWidth: 0,
   },
   unit: { fontSize: 11, color: C.text3, paddingHorizontal: 6 },
-  infoBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoBtnActive: { backgroundColor: 'rgba(59,130,246,0.12)' },
   descriptionBox: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.04)',
@@ -534,7 +589,8 @@ export default function GenerateScreen({ navigation }: Props) {
     setStep(4);
     try {
       const result = await selectDaysForPlan(input.trim());
-      const validJours = result.jours.filter((j): j is Jour => JOURS_FR.includes(j as Jour));
+      const normalized = result.jours.map(j => j.toLowerCase().trim());
+      const validJours = normalized.filter((j): j is Jour => JOURS_FR.includes(j as Jour));
       setSelectedJours(new Set(validJours.length ? validJours : (['mardi', 'jeudi', 'samedi'] as Jour[])));
       setDurationWeeks(result.semaines ?? 4);
     } catch {
