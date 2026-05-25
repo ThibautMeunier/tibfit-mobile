@@ -655,7 +655,7 @@ export default function GenerateScreen({ navigation }: Props) {
   const progressStep = getProgressStep(step);
   const pillStep = getPillStep(step);
   const ctaDisabled =
-    (step === 1 && input.trim().length < 10) ||
+    (step === 1 && input.trim().length === 0) ||
     (step === 2 && (metricsLoading || metricsSaving)) ||
     (step === 3 && startStrategy === null) ||
     (step === 4 && (selectedJours.size === 0 || daysLoading));
@@ -674,15 +674,19 @@ export default function GenerateScreen({ navigation }: Props) {
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
       {/* ── Pipeline Header ── */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={[styles.backBtn, step === 5 && styles.backBtnDisabled]}
-          disabled={step === 5}
-          activeOpacity={0.75}
-        >
-          <Icon name="chevronLeft" size={18} color={C.text} />
-        </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: insets.top + 4 }]}>
+        {step > 1 ? (
+          <TouchableOpacity
+            onPress={handleBack}
+            style={[styles.backBtn, step === 5 && styles.backBtnDisabled]}
+            disabled={step === 5}
+            activeOpacity={0.75}
+          >
+            <Icon name="chevronLeft" size={18} color={C.text} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.backBtnPlaceholder} />
+        )}
 
         <LottieView
           source={require('../../assets/Fibi.json')}
@@ -704,7 +708,7 @@ export default function GenerateScreen({ navigation }: Props) {
         )}
       </View>
 
-      {/* ── Progress bar (4 segments) ── */}
+      {/* ── Progress bar (4 segments) + close ── */}
       {progressStep !== null && (
         <View style={styles.progressRow}>
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
@@ -718,6 +722,13 @@ export default function GenerateScreen({ navigation }: Props) {
               ]}
             />
           ))}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.closeBtn}
+            activeOpacity={0.75}
+          >
+            <Icon name="x" size={16} color={C.text3} />
+          </TouchableOpacity>
         </View>
       )}
 
@@ -727,6 +738,7 @@ export default function GenerateScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
+        scrollEnabled={step !== 1}
       >
 
         {/* ═══ ÉTAPE 1 — OBJECTIF ═══ */}
@@ -1232,6 +1244,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   backBtnDisabled: { opacity: 0.4 },
+  backBtnPlaceholder: { width: 36, height: 36, flexShrink: 0 },
   headerAvatar: { width: 28, height: 28, flexShrink: 0 },
   headerTitle: { flex: 1, fontSize: 17, fontWeight: '700', color: C.text },
   stepPill: {
@@ -1256,6 +1269,11 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   progressSeg: { flex: 1, height: 3, borderRadius: 2 },
+  closeBtn: {
+    width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+    alignItems: 'center', justifyContent: 'center',
+    marginLeft: 4,
+  },
   progressSegActive: { backgroundColor: C.blue },
   progressSegInactive: { backgroundColor: C.bg3 },
 
