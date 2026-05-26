@@ -13,15 +13,13 @@ export const JOURS_FR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'sam
 export const JOURS_EN = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 export type Jour = typeof JOURS_FR[number];
 
-export const WEEKS_OPTIONS_SHORT = [1, 2, 3, 4] as const;
-export const WEEKS_OPTIONS_LONG = [4, 6, 8, 12, 16, 20] as const;
+const WEEKS_OPTIONS = [1, 2, 3, 4] as const;
 
 interface Props {
   selectedJours: Set<Jour>;
   onToggleJour: (jour: Jour) => void;
   selectedWeeks: number;
   onSelectWeeks: (w: number) => void;
-  weekOptions?: readonly number[];
   loading?: boolean;
   hint?: string;
   weeksLabel: string;
@@ -33,7 +31,6 @@ export default function DaysWeeksSelector({
   onToggleJour,
   selectedWeeks,
   onSelectWeeks,
-  weekOptions = WEEKS_OPTIONS_SHORT,
   loading,
   hint,
   weeksLabel,
@@ -84,7 +81,7 @@ export default function DaysWeeksSelector({
 
       <Text style={styles.weeksLabel}>{weeksLabel}</Text>
       <View style={styles.weeksRow}>
-        {weekOptions.map((w) => (
+        {WEEKS_OPTIONS.map((w) => (
           <TouchableOpacity
             key={w}
             style={[styles.weekChip, selectedWeeks === w && styles.weekChipSelected]}
