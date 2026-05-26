@@ -149,6 +149,13 @@ export default function ProfileScreen() {
   const [savingEdit, setSavingEdit] = useState(false);
   // Picker modal (catalogue)
   const [pickerVisible, setPickerVisible] = useState(false);
+  // Edit custom metric modal
+  const [editCustomVisible, setEditCustomVisible] = useState(false);
+  const [editingCustomDef, setEditingCustomDef] = useState<CustomMetricDef | null>(null);
+  const [editCustomName, setEditCustomName] = useState('');
+  const [editCustomUnit, setEditCustomUnit] = useState('');
+  const [editCustomValue, setEditCustomValue] = useState('');
+  const [savingCustomEdit, setSavingCustomEdit] = useState(false);
   // Create custom metric modal
   const [createCustomVisible, setCreateCustomVisible] = useState(false);
   const [customName, setCustomName] = useState('');
@@ -258,6 +265,63 @@ export default function ProfileScreen() {
             try {
               await deleteUserMetric(id);
               setUserMetrics((prev) => prev.filter((m) => m.id !== id));
+            } catch {
+              // silent
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  function openEditCustomModal(def: CustomMetricDef) {
+    const userVal = userMetrics.find((m) => m.metric_id === def.metric_id);
+    setEditingCustomDef(def);
+    setEditCustomName(def.name);
+    setEditCustomUnit(def.unit ?? '');
+    setEditCustomValue(userVal?.value ?? '');
+    setEditCustomVisible(true);
+  }
+
+  async function handleSaveCustomEdit() {
+    if (!editingCustomDef || !editCustomName.trim()) return;
+    setSavingCustomEdit(true);
+    try {
+      const updatedDef = await updateCustomMetric(
+        editingCustomDef.id,
+        editCustomName.trim(),
+        editCustomUnit.trim() || null,
+      );
+      setCustomMetrics((prev) => prev.map((d) => d.id === updatedDef.id ? updatedDef : d));
+      if (editCustomValue.trim()) {
+        const saved = await upsertUserMetric(editingCustomDef.metric_id, editCustomValue.trim());
+        setUserMetrics((prev) => [...prev.filter((m) => m.metric_id !== saved.metric_id), saved]);
+      }
+      setEditCustomVisible(false);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), t(`errors.${e?.message}`, { defaultValue: t('common.error') }));
+    } finally {
+      setSavingCustomEdit(false);
+    }
+  }
+
+  async function handleDeleteFromCustomModal() {
+    if (!editingCustomDef) return;
+    Alert.alert(
+      t('profile.customMetricDeleteConfirmTitle'),
+      t('profile.customMetricDeleteConfirmMsg'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteCustomMetric(editingCustomDef.id);
+              setCustomMetrics((prev) => prev.filter((d) => d.id !== editingCustomDef.id));
+              setUserMetrics((prev) => prev.filter((m) => m.metric_id !== editingCustomDef.metric_id));
+              setEditCustomVisible(false);
             } catch {
               // silent
             }
@@ -703,26 +767,7 @@ export default function ProfileScreen() {
                     <TouchableOpacity
                       key={def.id}
                       style={styles.userMetricRow}
-                      onPress={() => {
-                        const customEntry = {
-                          id: def.metric_id,
-                          name: def.name,
-                          description: '',
-                          category: '',
-                          sports: [],
-                          unit: def.unit,
-                          type: 'text' as const,
-                          volatility: 'stable' as const,
-                          blocking_for_sports: [],
-                          user_value: userVal?.value ?? null,
-                          user_source: userVal?.source ?? null,
-                          user_updated_at: userVal?.updated_at ?? null,
-                        };
-                        setEditingUserMetric(userVal ?? null);
-                        setEditingCatalogEntry(customEntry);
-                        setEditValue(userVal?.value ?? '');
-                        setEditModalVisible(true);
-                      }}
+                      onPress={() => openEditCustomModal(def)}
                       activeOpacity={0.7}
                     >
                       <View style={styles.userMetricContent}>
@@ -1037,6 +1082,76 @@ export default function ProfileScreen() {
               )}
             </View>
           )}
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+
+    {/* Modal édition métrique libre */}
+    <Modal visible={editCustomVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditCustomVisible(false)}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <View style={styles.editModal}>
+          <View style={styles.pickerHeader}>
+            <Text style={styles.pickerTitle}>{t('profile.customMetricEditTitle')}</Text>
+            <TouchableOpacity onPress={() => setEditCustomVisible(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Icon name="x" size={20} color={C.text2} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.editModalBody} keyboardShouldPersistTaps="handled">
+            <Text style={styles.editMetricName}>{t('profile.customMetricNameLabel')}</Text>
+            <TextInput
+              value={editCustomName}
+              onChangeText={setEditCustomName}
+              placeholder={t('profile.customMetricNamePlaceholder')}
+              placeholderTextColor={C.text3}
+              style={[styles.editInput, { marginTop: 8, marginBottom: 20 }]}
+              autoCapitalize="sentences"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
+            <Text style={styles.editMetricName}>{t('profile.customMetricUnitLabel')}</Text>
+            <TextInput
+              value={editCustomUnit}
+              onChangeText={setEditCustomUnit}
+              placeholder={t('profile.customMetricUnitPlaceholder')}
+              placeholderTextColor={C.text3}
+              style={[styles.editInput, { marginTop: 8, marginBottom: 20 }]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
+            <Text style={styles.editMetricName}>{t('profile.customMetricValueLabel')}</Text>
+            <View style={[styles.editInputRow, { marginTop: 8, marginBottom: 28 }]}>
+              <TextInput
+                value={editCustomValue}
+                onChangeText={setEditCustomValue}
+                style={styles.editInput}
+                placeholderTextColor={C.text3}
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+              />
+              {editCustomUnit ? <Text style={styles.editInputUnit}>{editCustomUnit}</Text> : null}
+            </View>
+            <TouchableOpacity
+              style={[styles.editSaveBtn, !editCustomName.trim() && { opacity: 0.4 }]}
+              onPress={handleSaveCustomEdit}
+              disabled={!editCustomName.trim() || savingCustomEdit}
+              activeOpacity={0.85}
+            >
+              {savingCustomEdit
+                ? <ActivityIndicator color="#fff" />
+                : <Text style={styles.editSaveBtnLabel}>{t('common.save')}</Text>
+              }
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.editDeleteBtn}
+              onPress={handleDeleteFromCustomModal}
+              activeOpacity={0.7}
+            >
+              <Icon name="trash" size={14} color={C.red} />
+              <Text style={styles.editDeleteBtnLabel}>{t('profile.customMetricDeleteConfirmTitle')}</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </Modal>
