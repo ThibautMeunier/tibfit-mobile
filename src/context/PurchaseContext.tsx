@@ -1,7 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import Purchases, { LOG_LEVEL, PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
 
-const RC_IOS_KEY = 'appl_RsMBwaAYrAplxrkRQmwPHmOufJN';
+const RC_IOS_KEY     = 'appl_RsMBwaAYrAplxrkRQmwPHmOufJN';
+const RC_ANDROID_KEY = 'goog_PLACEHOLDER'; // TODO: remplacer par la vraie clé depuis le dashboard RevenueCat
 
 interface PurchaseContextValue {
   isPremium: boolean;
@@ -24,7 +26,9 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     Purchases.setLogLevel(LOG_LEVEL.ERROR);
-    Purchases.configure({ apiKey: RC_IOS_KEY });
+    Purchases.configure({
+      apiKey: Platform.select({ ios: RC_IOS_KEY, android: RC_ANDROID_KEY })!,
+    });
     _loadOfferings();
   }, []);
 

@@ -46,7 +46,8 @@
         "backgroundColor": "#0A0A0F"
       },
       "package": "com.tibfit.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "updates": {
       "url": "https://u.expo.dev/0fd4a3dc-fa3b-40db-ac8e-0e8f83dfeca9",
