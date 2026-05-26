@@ -685,7 +685,7 @@ export default function ProfileScreen() {
                       activeOpacity={0.7}
                     >
                       <View style={styles.userMetricContent}>
-                        <Text style={styles.userMetricName}>{entry.name}</Text>
+                        <Text style={styles.userMetricName}>{t(`metrics.${entry.id}`, { defaultValue: entry.name })}</Text>
                         <Text style={styles.userMetricValue}>
                           {m.value}{unit ? ` ${unit}` : ''}
                         </Text>
@@ -1005,7 +1005,7 @@ export default function ProfileScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.pickerRowName}>{entry.name}</Text>
+                    <Text style={styles.pickerRowName}>{t(`metrics.${entry.id}`, { defaultValue: entry.name })}</Text>
                     {entry.unit ? <Text style={styles.pickerRowMeta}>{entry.unit}</Text> : null}
                   </View>
                   <Icon name="plus" size={16} color={C.blue} />
@@ -1031,7 +1031,7 @@ export default function ProfileScreen() {
           </View>
           {editingCatalogEntry && (
             <View style={styles.editModalBody}>
-              <Text style={styles.editMetricName}>{editingCatalogEntry.name}</Text>
+              <Text style={styles.editMetricName}>{t(`metrics.${editingCatalogEntry.id}`, { defaultValue: editingCatalogEntry.name })}</Text>
               {editingCatalogEntry.description ? (
                 <Text style={styles.editMetricDesc}>{editingCatalogEntry.description}</Text>
               ) : null}

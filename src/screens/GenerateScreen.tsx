@@ -132,9 +132,10 @@ interface MetricRowProps {
   onChange: (v: string) => void;
   expanded: boolean;
   onToggle: () => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }
 
-function MetricRow({ metric, value, onChange, expanded, onToggle }: MetricRowProps) {
+function MetricRow({ metric, value, onChange, expanded, onToggle, t }: MetricRowProps) {
   const isKey = metric.blocking_for_sports.length > 0;
 
   const chipValues: string[] = (() => {
@@ -156,7 +157,7 @@ function MetricRow({ metric, value, onChange, expanded, onToggle }: MetricRowPro
     <View style={mStyles.container}>
       <View style={mStyles.inner}>
         <View style={mStyles.topRow}>
-          <Text style={mStyles.name} numberOfLines={2}>{metric.name}</Text>
+          <Text style={mStyles.name} numberOfLines={2}>{t(`metrics.${metric.id}`, { defaultValue: metric.name })}</Text>
           {isKey && (
             <View style={mStyles.keyBadge}>
               <Text style={mStyles.keyLabel}>CLÉ</Text>
@@ -707,7 +708,7 @@ export default function GenerateScreen({ navigation }: Props) {
   }>;
 
   const missingMetricName = missingMetricIds.length
-    ? (metricsData.find(m => m.id === missingMetricIds[0])?.name ?? missingMetricIds[0])
+    ? (() => { const m = metricsData.find(x => x.id === missingMetricIds[0]); return m ? t(`metrics.${m.id}`, { defaultValue: m.name }) : missingMetricIds[0]; })()
     : '';
 
   const progressStep = getProgressStep(step);
@@ -886,6 +887,7 @@ export default function GenerateScreen({ navigation }: Props) {
                     onChange={(v) => setMetricsValues(prev => ({ ...prev, [m.id]: v }))}
                     expanded={expandedMetricId === m.id}
                     onToggle={() => setExpandedMetricId(expandedMetricId === m.id ? null : m.id)}
+                    t={t}
                   />
                 ))}
               </View>

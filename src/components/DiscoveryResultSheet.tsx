@@ -160,7 +160,7 @@ export default function DiscoveryResultPopup({ visible, discoveryMetricId, onDon
         <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
           <View style={styles.headerLeft}>
             <Text style={styles.title}>{t('discoveryResultPopup.title')}</Text>
-            {metric && <Text style={styles.metricName}>{metric.name}</Text>}
+            {metric && <Text style={styles.metricName}>{t(`metrics.${metric.id}`, { defaultValue: metric.name })}</Text>}
           </View>
           <TouchableOpacity onPress={onSkip} style={styles.skipBtn} activeOpacity={0.7}>
             <Text style={styles.skipLabel}>{t('discoveryResultPopup.skip')}</Text>
