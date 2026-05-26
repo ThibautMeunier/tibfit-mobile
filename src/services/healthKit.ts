@@ -8,8 +8,11 @@ import {
   HKWorkoutActivityType as WorkoutActivityType,
   HKAuthorizationStatus as AuthorizationStatus,
 } from '@kingstinct/react-native-healthkit';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import type { Seance } from '../types';
+
+// HealthKit est iOS uniquement — toutes les fonctions retournent no-op sur Android
+const isIOS = Platform.OS === 'ios';
 
 const WRITE_TYPES = [
   'HKWorkoutTypeIdentifier',
@@ -59,6 +62,7 @@ function estimateCalories(sport: string | null | undefined, duree_minutes: numbe
 }
 
 export async function isHealthKitAvailable(): Promise<boolean> {
+  if (!isIOS) return false;
   try {
     return await isHealthDataAvailable();
   } catch {
@@ -113,6 +117,7 @@ export async function requestPermissions(): Promise<boolean> {
 
 // Ouvre les Réglages iOS → Santé → TibFit pour gérer les permissions
 export function openHealthSettings(): void {
+  if (!isIOS) { Linking.openSettings(); return; }
   Linking.openURL('x-apple-health://').catch(() => {
     Linking.openSettings();
   });
@@ -193,6 +198,7 @@ export async function saveWorkout(
   sport: string | null | undefined,
   poids_kg?: number | null,
 ): Promise<string | null> {
+  if (!isIOS) return null;
   try {
     const activityType = sportToActivityType(sport);
     const calories = poids_kg ? estimateCalories(sport, seance.duree_minutes, poids_kg) : undefined;

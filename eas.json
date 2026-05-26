@@ -9,6 +9,9 @@
       "channel": "development",
       "ios": {
         "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "preview": {
@@ -16,6 +19,9 @@
       "channel": "preview",
       "ios": {
         "buildConfiguration": "Release"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "staging": {
@@ -27,6 +33,9 @@
       "ios": {
         "buildConfiguration": "Release",
         "image": "latest"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
