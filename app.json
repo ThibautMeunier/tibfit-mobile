@@ -47,7 +47,16 @@
       },
       "package": "com.tibfit.app",
       "versionCode": 1,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_RESTING_HEART_RATE",
+        "android.permission.health.READ_VO2_MAX",
+        "android.permission.health.READ_WEIGHT",
+        "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+        "android.permission.health.WRITE_EXERCISE",
+        "android.permission.health.WRITE_ACTIVE_CALORIES_BURNED"
+      ]
     },
     "updates": {
       "url": "https://u.expo.dev/0fd4a3dc-fa3b-40db-ac8e-0e8f83dfeca9",
@@ -63,6 +72,7 @@
       "expo-asset",
       "expo-build-properties",
       "expo-apple-authentication",
+      "react-native-health-connect",
       [
         "expo-notifications",
         {

@@ -19,7 +19,7 @@ import { RootStackParamList, Seance, SeanceSection, WorkoutStep } from '../types
 import * as Haptics from 'expo-haptics';
 import { patchSeance, chatSeance, getMe } from '../services/api';
 import { addPendingAction, updateSeanceInCache } from '../services/offlineCache';
-import { isAuthorized, canReadWorkoutMetrics, saveWorkout, readWorkoutMetrics } from '../services/healthKit';
+import { isAuthorized, canReadWorkoutMetrics, saveWorkout, readWorkoutMetrics } from '../services/healthService';
 import { isWorkoutKitAvailable, createWorkoutOnWatch } from '../services/workoutKit';
 import { useAuth } from '../context/AuthContext';
 import { usePurchase } from '../context/PurchaseContext';
@@ -177,10 +177,10 @@ export default function SessionScreen({ route, navigation }: Props) {
           });
         }
       } else {
-        Alert.alert(t('common.error'), t('session.alertHealthError'));
+        Alert.alert(t('common.error'), t('session.alertHealthError', { context: Platform.OS }));
       }
     } catch {
-      Alert.alert(t('common.error'), t('session.alertHealthError'));
+      Alert.alert(t('common.error'), t('session.alertHealthError', { context: Platform.OS }));
     } finally {
       setHkSaving(false);
     }
@@ -393,7 +393,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                 <>
                   <Icon name="heart" size={16} color={hkSaved ? C.red : '#fff'} />
                   <Text style={[styles.hkBtnLabel, hkSaved && { color: C.red }]}>
-                    {hkSaved ? t('session.savedToHealth') : t('session.saveToHealth')}
+                    {hkSaved ? t('session.savedToHealth', { context: Platform.OS }) : t('session.saveToHealth', { context: Platform.OS })}
                   </Text>
                 </>
               )}

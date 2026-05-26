@@ -47,7 +47,7 @@ import {
 import Icon from '../components/Icon';
 import { SectionLabel, Button } from '../components/ui';
 import { RootStackParamList } from '../types';
-import { isHealthKitAvailable, isAuthorized, requestPermissions, openHealthSettings, readFitnessMetrics, FitnessMetrics } from '../services/healthKit';
+import { isHealthDataAvailable, isAuthorized, requestPermissions, openHealthSettings, readFitnessMetrics, FitnessMetrics } from '../services/healthService';
 import { setLanguage, SUPPORTED_LANGUAGES, AppLanguage } from '../i18n';
 
 type Section = 'profil' | 'securite' | 'donnees';
@@ -394,7 +394,7 @@ export default function ProfileScreen() {
   React.useEffect(() => {
     if (section !== 'donnees') return;
     (async () => {
-      const available = await isHealthKitAvailable();
+      const available = await isHealthDataAvailable();
       setHkAvailable(available);
       if (available) {
         const auth = await isAuthorized();
@@ -867,7 +867,7 @@ export default function ProfileScreen() {
           {/* Apple Santé */}
           {hkAvailable && (
             <View style={styles.group}>
-              <SectionLabel label={t('profile.groupAppleHealth')} />
+              <SectionLabel label={t('profile.groupAppleHealth', { context: Platform.OS })} />
               <View style={[styles.card, hkAuthorized && styles.hkConnectedCard]}>
                 <View style={styles.hkRow}>
                   <View style={[styles.dataRowIcon, hkAuthorized && styles.hkConnectedIcon]}>
@@ -875,10 +875,10 @@ export default function ProfileScreen() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.dataRowLabel}>
-                      {hkAuthorized ? t('profile.hkConnected') : t('profile.hkConnect')}
+                      {hkAuthorized ? t('profile.hkConnected', { context: Platform.OS }) : t('profile.hkConnect', { context: Platform.OS })}
                     </Text>
                     <Text style={styles.hkSubtitle}>
-                      {hkAuthorized ? t('profile.hkConnectedSubtitle') : t('profile.hkDisconnectedSubtitle')}
+                      {hkAuthorized ? t('profile.hkConnectedSubtitle', { context: Platform.OS }) : t('profile.hkDisconnectedSubtitle')}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -902,26 +902,26 @@ export default function ProfileScreen() {
           {/* Métriques HealthKit */}
           {hkAuthorized && hkMetrics && (hkMetrics.restingHR || hkMetrics.vo2max || hkMetrics.poids_kg) && (
             <View style={styles.group}>
-              <SectionLabel label={t('profile.hkMetricsTitle')} />
+              <SectionLabel label={t('profile.hkMetricsTitle', { context: Platform.OS })} />
               <View style={styles.card}>
                 {hkMetrics.restingHR && (
                   <View style={styles.hkMetricRow}>
                     <Icon name="heart" size={14} color={C.red} />
-                    <Text style={styles.hkMetricLabel}>{t('profile.hkRestingHR')}</Text>
+                    <Text style={styles.hkMetricLabel}>{t('profile.hkRestingHR', { context: Platform.OS })}</Text>
                     <Text style={styles.hkMetricValue}>{hkMetrics.restingHR} bpm</Text>
                   </View>
                 )}
                 {hkMetrics.vo2max && (
                   <View style={styles.hkMetricRow}>
                     <Icon name="activity" size={14} color={C.blue} />
-                    <Text style={styles.hkMetricLabel}>{t('profile.hkVO2Max')}</Text>
+                    <Text style={styles.hkMetricLabel}>{t('profile.hkVO2Max', { context: Platform.OS })}</Text>
                     <Text style={styles.hkMetricValue}>{hkMetrics.vo2max} ml/kg/min</Text>
                   </View>
                 )}
                 {hkMetrics.poids_kg && (
                   <View style={styles.hkMetricRow}>
                     <Icon name="stats" size={14} color={C.text2} />
-                    <Text style={styles.hkMetricLabel}>{t('profile.hkWeight')}</Text>
+                    <Text style={styles.hkMetricLabel}>{t('profile.hkWeight', { context: Platform.OS })}</Text>
                     <Text style={styles.hkMetricValue}>{hkMetrics.poids_kg} kg</Text>
                   </View>
                 )}
