@@ -68,7 +68,8 @@
           "color": "#3B82F6",
           "sounds": []
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {

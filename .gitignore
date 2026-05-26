@@ -9,3 +9,6 @@ web-build/
 *.key
 *.mobileprovision
 *.orig.*
+*.keystore
+.idea/
+android/local.properties
