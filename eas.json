@@ -37,6 +37,9 @@
       "ios": {
         "buildConfiguration": "Release",
         "image": "latest"
+      },
+      "android": {
+        "buildType": "app-bundle"
       }
     }
   },
