@@ -15,7 +15,6 @@ import {
   Modal,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -484,8 +483,6 @@ export default function ProfileScreen() {
     ]);
   }
 
-  const initial = (user?.name ?? 'T')[0].toUpperCase();
-
   const SPORT_LABELS: Record<string, string> = {
     running: 'Running', velo: 'Vélo', natation: 'Natation',
     triathlon: 'Triathlon', musculation: 'Musculation', yoga: 'Yoga', transverse: 'Général',
@@ -576,22 +573,6 @@ export default function ProfileScreen() {
     >
       {/* Header */}
       <Text style={styles.pageTitle}>{t('profile.title')}</Text>
-
-      {/* Avatar */}
-      <View style={styles.avatarSection}>
-        <View style={styles.avatarWrap}>
-          <LinearGradient
-            colors={['#3B82F6', '#6366F1']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.avatar}
-          >
-            <Text style={styles.avatarLetter}>{initial}</Text>
-          </LinearGradient>
-        </View>
-        <Text style={styles.avatarName}>{user?.name ?? ''}</Text>
-        <Text style={styles.avatarEmail}>{user?.email ?? ''}</Text>
-      </View>
 
       {/* Tab switcher */}
       <View style={styles.tabRow}>
@@ -1178,17 +1159,6 @@ const styles = StyleSheet.create({
   versionLabel: { textAlign: 'center', fontSize: 11, color: C.text3, marginTop: 24, marginBottom: 8 },
 
   pageTitle: { fontSize: 20, fontWeight: '700', color: C.text, marginBottom: 20 },
-
-  avatarSection: { alignItems: 'center', marginBottom: 28 },
-  avatarWrap: { position: 'relative', marginBottom: 12 },
-  avatar: {
-    width: 80, height: 80, borderRadius: 40,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: C.blue, shadowOpacity: 0.4, shadowRadius: 12, shadowOffset: { width: 0, height: 0 },
-  },
-  avatarLetter: { fontSize: 32, fontWeight: '700', color: '#fff' },
-  avatarName: { fontSize: 17, fontWeight: '700', color: C.text, marginBottom: 3 },
-  avatarEmail: { fontSize: 12, color: C.text3 },
 
   tabRow: {
     flexDirection: 'row', backgroundColor: C.card, borderWidth: 1, borderColor: C.border,
