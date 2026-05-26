@@ -152,7 +152,6 @@ export default function ProfileScreen() {
   // Create custom metric modal
   const [createCustomVisible, setCreateCustomVisible] = useState(false);
   const [customName, setCustomName] = useState('');
-  const [customType, setCustomType] = useState<'number' | 'text' | 'scale'>('number');
   const [customUnit, setCustomUnit] = useState('');
   const [customInitialValue, setCustomInitialValue] = useState('');
   const [savingCustom, setSavingCustom] = useState(false);
@@ -270,7 +269,6 @@ export default function ProfileScreen() {
 
   function openCreateCustomModal() {
     setCustomName('');
-    setCustomType('number');
     setCustomUnit('');
     setCustomInitialValue('');
     setCreateCustomVisible(true);
@@ -282,7 +280,6 @@ export default function ProfileScreen() {
     try {
       const def = await createCustomMetric(
         customName.trim(),
-        customType,
         customUnit.trim() || null,
         customInitialValue.trim() || null,
       );
@@ -707,45 +704,24 @@ export default function ProfileScreen() {
                       key={def.id}
                       style={styles.userMetricRow}
                       onPress={() => {
-                        if (userVal) {
-                          setEditingUserMetric(userVal);
-                          setEditingCatalogEntry({
-                            id: def.metric_id,
-                            name: def.name,
-                            description: '',
-                            category: '',
-                            sports: [],
-                            unit: def.unit,
-                            type: def.type === 'scale' ? 'scale' : def.type === 'number' ? 'number' : 'text',
-                            value_range: def.type === 'scale' ? { min: 1, max: 10 } : undefined,
-                            volatility: 'stable',
-                            blocking_for_sports: [],
-                            user_value: userVal?.value ?? null,
-                            user_source: userVal?.source ?? null,
-                            user_updated_at: userVal?.updated_at ?? null,
-                          });
-                          setEditValue(userVal.value);
-                          setEditModalVisible(true);
-                        } else {
-                          setEditingUserMetric(null);
-                          setEditingCatalogEntry({
-                            id: def.metric_id,
-                            name: def.name,
-                            description: '',
-                            category: '',
-                            sports: [],
-                            unit: def.unit,
-                            type: def.type === 'scale' ? 'scale' : def.type === 'number' ? 'number' : 'text',
-                            value_range: def.type === 'scale' ? { min: 1, max: 10 } : undefined,
-                            volatility: 'stable',
-                            blocking_for_sports: [],
-                            user_value: null,
-                            user_source: null,
-                            user_updated_at: null,
-                          });
-                          setEditValue('');
-                          setEditModalVisible(true);
-                        }
+                        const customEntry = {
+                          id: def.metric_id,
+                          name: def.name,
+                          description: '',
+                          category: '',
+                          sports: [],
+                          unit: def.unit,
+                          type: 'text' as const,
+                          volatility: 'stable' as const,
+                          blocking_for_sports: [],
+                          user_value: userVal?.value ?? null,
+                          user_source: userVal?.source ?? null,
+                          user_updated_at: userVal?.updated_at ?? null,
+                        };
+                        setEditingUserMetric(userVal ?? null);
+                        setEditingCatalogEntry(customEntry);
+                        setEditValue(userVal?.value ?? '');
+                        setEditModalVisible(true);
                       }}
                       activeOpacity={0.7}
                     >
@@ -1088,26 +1064,6 @@ export default function ProfileScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
-            {/* Type */}
-            <Text style={styles.editMetricName}>{t('profile.customMetricTypeLabel')}</Text>
-            <View style={[styles.enumRow, { marginTop: 8, marginBottom: 20 }]}>
-              {([
-                { value: 'number', label: t('profile.customMetricTypeNumber') },
-                { value: 'text',   label: t('profile.customMetricTypeText') },
-                { value: 'scale',  label: t('profile.customMetricTypeScale') },
-              ] as { value: 'number' | 'text' | 'scale'; label: string }[]).map((opt) => (
-                <TouchableOpacity
-                  key={opt.value}
-                  style={[styles.enumChip, customType === opt.value && styles.enumChipActive]}
-                  onPress={() => setCustomType(opt.value)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.enumChipLabel, customType === opt.value && styles.enumChipLabelActive]}>
-                    {opt.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
             {/* Unité */}
             <Text style={styles.editMetricName}>{t('profile.customMetricUnitLabel')}</Text>
             <TextInput
@@ -1126,7 +1082,7 @@ export default function ProfileScreen() {
               <TextInput
                 value={customInitialValue}
                 onChangeText={setCustomInitialValue}
-                keyboardType={customType === 'number' || customType === 'scale' ? 'decimal-pad' : 'default'}
+                keyboardType="default"
                 style={styles.editInput}
                 placeholderTextColor={C.text3}
                 autoCapitalize="none"

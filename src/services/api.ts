@@ -282,26 +282,24 @@ export interface CustomMetricDef {
   id: number;
   metric_id: string;
   name: string;
-  type: 'number' | 'text' | 'scale';
   unit: string | null;
   created_at: string;
 }
 
 export async function getCustomMetrics(): Promise<CustomMetricDef[]> {
   const res = await authFetch('/me/custom-metrics');
-  if (!res.ok) throw new Error('Impossible de charger les métriques personnalisées');
+  if (!res.ok) throw new Error('CUSTOM_METRICS_FETCH_FAILED');
   return res.json();
 }
 
 export async function createCustomMetric(
   name: string,
-  type: 'number' | 'text' | 'scale',
   unit: string | null,
   initialValue: string | null,
 ): Promise<CustomMetricDef> {
   const res = await authFetch('/me/custom-metrics', {
     method: 'POST',
-    body: JSON.stringify({ name, type, unit: unit || null, initial_value: initialValue || null }),
+    body: JSON.stringify({ name, unit: unit || null, initial_value: initialValue || null }),
   });
   if (!res.ok) {
     const data = await safeJson(res);
