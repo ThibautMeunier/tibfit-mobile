@@ -187,6 +187,14 @@ class TibFitWorkoutKit: NSObject {
   }
 
   @available(iOS 17.0, *)
+  private func makeOpenStep(label: String? = nil) -> WorkoutStep {
+    if #available(iOS 18.0, *), let label = label {
+      return WorkoutStep(goal: .open, displayName: label)
+    }
+    return WorkoutStep(goal: .open)
+  }
+
+  @available(iOS 17.0, *)
   private func buildCustomWorkout(
     displayName: String,
     activityType: HKWorkoutActivityType,
@@ -214,6 +222,12 @@ class TibFitWorkoutKit: NSObject {
         let workStep     = IntervalStep(.work, step: makeStep(seconds: ws))
         let recoveryStep = IntervalStep(.recovery, step: makeStep(seconds: rs))
         NSLog("[WorkoutKit]   bloc work/recovery — work=%ds recovery=%ds x%d", ws, rs, iterations)
+        intervalBlocks.append(IntervalBlock(steps: [workStep, recoveryStep], iterations: iterations))
+      } else if let rs = recoverySecs {
+        // Pas de contrainte de temps sur le travail (ex: musculation — 4x8 reps) → open
+        let workStep     = IntervalStep(.work, step: makeOpenStep(label: titre))
+        let recoveryStep = IntervalStep(.recovery, step: makeStep(seconds: rs))
+        NSLog("[WorkoutKit]   bloc work open/recovery — recovery=%ds x%d", rs, iterations)
         intervalBlocks.append(IntervalBlock(steps: [workStep, recoveryStep], iterations: iterations))
       } else {
         let stepSecs = max(dureeSeconds / iterations, 1)
