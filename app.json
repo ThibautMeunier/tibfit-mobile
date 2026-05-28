@@ -3,7 +3,7 @@
     "name": "TibFit",
     "slug": "tibfit",
     "scheme": "tibfit",
-    "version": "2.2.13",
+    "version": "2.2.14",
     "orientation": "portrait",
     "newArchEnabled": true,
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.tibfit.app",
-      "buildNumber": "14",
+      "buildNumber": "15",
       "entitlements": {
         "com.apple.developer.healthkit": true,
         "com.apple.developer.applesignin": [
