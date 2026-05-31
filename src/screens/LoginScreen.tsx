@@ -24,8 +24,7 @@ import { login, register, forgotPassword, appleSignIn, googleSignIn } from '../s
 
 GoogleSignin.configure({
   iosClientId: '391199112655-7so8b9vmovctnmmaqlr5r59a76v52hib.apps.googleusercontent.com',
-  // TODO: remplacer par le Client ID Web créé dans Google Cloud Console (nécessaire sur Android)
-  webClientId: 'PLACEHOLDER.apps.googleusercontent.com',
+  webClientId: '391199112655-o48ti0amp1165ckm1ool4hdii66kgvmm.apps.googleusercontent.com',
 });
 import { useAuth } from '../context/AuthContext';
 
