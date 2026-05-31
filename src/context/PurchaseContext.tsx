@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import Purchases, { LOG_LEVEL, PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
 
 const RC_IOS_KEY     = 'appl_RsMBwaAYrAplxrkRQmwPHmOufJN';
-const RC_ANDROID_KEY = 'goog_PLACEHOLDER'; // TODO: remplacer par la vraie clé depuis le dashboard RevenueCat
+const RC_ANDROID_KEY = 'goog_QetfyIslmSvyEQDyzAvZbzIAsci';
 
 interface PurchaseContextValue {
   isPremium: boolean;
