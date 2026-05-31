@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "391199112655",
+    "project_id": "tibfit",
+    "storage_bucket": "tibfit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391199112655:android:13ca569d5ea653408566ba",
+        "android_client_info": {
+          "package_name": "com.tibfit.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEc1PPmYoe3p1hYGEz6OS4y4_833NsUIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "391199112655-7so8b9vmovctnmmaqlr5r59a76v52hib.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tibfit.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
