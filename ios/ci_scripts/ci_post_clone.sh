@@ -8,6 +8,7 @@ brew install node
 {
   echo "export NODE_BINARY=$(which node)"
   echo "export CI=true"
+  echo "export EXPO_PUBLIC_API_URL=https://api.tibfit.com"
 } > "$CI_PRIMARY_REPOSITORY_PATH/ios/.xcode.env.local"
 
 cd "$CI_PRIMARY_REPOSITORY_PATH"
