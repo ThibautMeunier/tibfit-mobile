@@ -60,6 +60,13 @@
             ReferencedContainer = "container:TibFit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "EXPO_PUBLIC_API_URL"
+            value = "https://api.tibfit.com"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <StoreKitConfigurationFileReference
          identifier = "../Products.storekit">
       </StoreKitConfigurationFileReference>
